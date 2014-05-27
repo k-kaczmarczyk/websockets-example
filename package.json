@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "description": "Basic moodtracker app build on websockets",
   "dependencies": {
-    "socket.io": "^0.9.16"
+    "socket.io": "^0.9.16",
+    "websocket.io": "~0.2"
   }
 }

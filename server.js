@@ -1,6 +1,6 @@
 var http = require('http'),
   fs = require('fs'),
-  socketio = require('socket.io');
+  ws = require('websocket.io');
 
 function handler(req, res) {
   fs.readFile(__dirname + '/index.html',
@@ -18,8 +18,8 @@ function handler(req, res) {
 var app = http.createServer(handler);
 
 app.listen(80);
-var io = socketio.listen(app);
+var ws = ws.attach(app);
 
-io.sockets.on('connection',function(socket) {
-  console.log('client connected',socket.handshake);
+ws.on('connection',function(socket) {
+  console.log('client connected, number of clients:',ws.clientsCount);
 });
