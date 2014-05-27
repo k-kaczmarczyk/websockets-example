@@ -11,13 +11,51 @@
 
       <strong>Status:</strong><span id="status"></span><br/>
 
-      <strong>Liczba podłączonych:</strong><span id="clients"></span>
+      <strong>Liczba podłączonych:</strong><span id="clients"></span><br/>
+
+      <table>
+        <tr>
+          <td><strong>Mood</strong></td>
+          <td><a href="#" onclick="setMood('sad')">Sad</a></td>
+          <td><a href="#" onclick="setMood('content')">Content</a></td>
+          <td><a href="#" onclick="setMood('happy')">Happy</a></td>
+        </tr>
+        <tr id="my-mood">
+          <td><strong>I am</strong></td>
+          <td></td>
+          <td>x</td>
+          <td></td>
+        </tr>
+        <tr>
+          <td><strong>Others are</strong></td>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+      </table>
 
       <script type="text/javascript">
+        var moods = [
+          'sad',
+          'content',
+          'happy'
+        ];
+
         function setStatus(txt,el) {
           el = el || 'status';
           document.getElementById(el).textContent = txt;
         };
+
+        function setMood(mood) {
+          var tds = document.getElementById('my-mood').getElementsByTagName('td'),
+          i = tds.length-1;
+          for (;i>=1;i--) {
+            if (i-1 == moods.indexOf(mood))
+              tds[i].textContent = 'x';
+            else
+              tds[i].textContent = '';
+          }
+        }
 
         var connection = new WebSocket("ws://localhost");
         connection.onopen = function() {
