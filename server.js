@@ -24,30 +24,55 @@ ws.on('error',function(error) {
   console.log('error');
 });
 
-ws.on('connection',function(socket) {
-  var i;
-  function broadcastClientsCount() {
-    data = {
-      clientsCount: ws.clientsCount
-    };
+//mood types:
 
-    for (i=0;i<ws.clients.length;i++) {
-      if (ws.clients[i])
-        ws.clients[i].send(JSON.stringify(data));
-    }
+var moods = {
+  'sad': 0,
+  'content': 0,
+  'happy': 0
+};
+
+function broadcastStatus() {
+  data = {
+    clientsCount: ws.clientsCount
+  };
+
+  for (i=0;i<ws.clients.length;i++) {
+    if (ws.clients[i])
+      ws.clients[i].send(JSON.stringify(data));
   }
+}
 
+ws.on('connection',function(socket) {
+  var i,
+  myMood;
 
   socket.on('error',function(e) {
     console.log('socker error ',e);
   });
 
   socket.on('close',function() {
-    broadcastClientsCount();
+    broadcastStatus();
+  });
+
+  socket.on('data',function(data) {
+    console.log('received "'+data+'"');
+
+    //interpreting as json:
+    json = JSON.parse(data);
+    if (json.type == 'moodtracker.change' && json.moodName) {
+      if (myMood !== undefined) {
+        moods[myMood]--;
+      }
+      myMood = json.moodName;
+      moods[myMood]++;
+    }
+    console.log(moods);
+
   });
 
   console.log('client connected, number of clients:',ws.clientsCount);
   //sending client count to newly connected client
-  broadcastClientsCount();
+  broadcastStatus();
 
 });

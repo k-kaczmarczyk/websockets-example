@@ -39,7 +39,8 @@
           'sad',
           'content',
           'happy'
-        ];
+        ],
+        connection = new WebSocket("ws://localhost");
 
         function setStatus(txt,el) {
           el = el || 'status';
@@ -55,9 +56,11 @@
             else
               tds[i].textContent = '';
           }
+
+          connection.send(JSON.stringify({type:'moodtracker.change',moodName:mood}));
         }
 
-        var connection = new WebSocket("ws://localhost");
+
         connection.onopen = function() {
           setStatus('Connected');
         };
