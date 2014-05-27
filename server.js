@@ -25,6 +25,8 @@ ws.on('error',function(error) {
 });
 
 ws.on('connection',function(socket) {
+  var i;
+
   socket.on('error',function(e) {
     console.log('socker error ',e);
   });
@@ -33,5 +35,9 @@ ws.on('connection',function(socket) {
   data = {
     clientsCount: ws.clientsCount
   };
-  socket.send(JSON.stringify(data));
+
+  for (i=0;i<ws.clients.length;i++) {
+    ws.clients[i].send(JSON.stringify(data));
+  }
+
 });
