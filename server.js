@@ -20,6 +20,18 @@ var app = http.createServer(handler);
 app.listen(80);
 var ws = ws.attach(app);
 
+ws.on('error',function(error) {
+  console.log('error');
+});
+
 ws.on('connection',function(socket) {
+  socket.on('error',function(e) {
+    console.log('socker error ',e);
+  });
   console.log('client connected, number of clients:',ws.clientsCount);
+  //sending client count to newly connected client
+  data = {
+    clientCount: ws.clientsCount
+  };
+  socket.send(JSON.stringify(data));
 });

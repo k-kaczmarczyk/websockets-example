@@ -1,8 +1,20 @@
 <h1>Mood tracker</h1>
 
+<strong>Status:</strong><span id="status"></span>
+
 <script type="text/javascript">
+  function setStatus(txt) {
+    document.getElementById('status').textContent = txt;
+  };
+
   var connection = new WebSocket("ws://localhost");
   connection.onopen = function() {
-    alert('connected');
+    setStatus('Connected');
+  };
+  connection.onerror = function(error) {
+    setStatus('Error');
+  };
+  connection.onmessage = function(e) {
+    setStatus('Got message: '+e.data)
   };
 </script>
