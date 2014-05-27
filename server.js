@@ -34,8 +34,12 @@ var moods = {
 
 function broadcastStatus() {
   data = {
-    clientsCount: ws.clientsCount
+    type: 'moodtracker.status',
+    clientsCount: ws.clientsCount,
+    moods: moods
   };
+
+  console.log('Broadcasting status:',data);
 
   for (i=0;i<ws.clients.length;i++) {
     if (ws.clients[i])
@@ -52,6 +56,7 @@ ws.on('connection',function(socket) {
   });
 
   socket.on('close',function() {
+    moods[myMood]--;
     broadcastStatus();
   });
 
@@ -66,9 +71,8 @@ ws.on('connection',function(socket) {
       }
       myMood = json.moodName;
       moods[myMood]++;
+      broadcastStatus();
     }
-    console.log(moods);
-
   });
 
   console.log('client connected, number of clients:',ws.clientsCount);

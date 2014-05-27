@@ -40,6 +40,7 @@
           'content',
           'happy'
         ],
+        myMood = 'content',
         connection = new WebSocket("ws://localhost");
 
         function setStatus(txt,el) {
@@ -56,13 +57,13 @@
             else
               tds[i].textContent = '';
           }
-
-          connection.send(JSON.stringify({type:'moodtracker.change',moodName:mood}));
+          myMood = mood;
+          connection.send(JSON.stringify({type:'moodtracker.change',moodName:myMood}));
         }
-
 
         connection.onopen = function() {
           setStatus('Connected');
+          connection.send(JSON.stringify({type:'moodtracker.change',moodName:myMood}));
         };
         connection.onerror = function(error) {
           setStatus('Error');
