@@ -26,7 +26,7 @@
           <td>x</td>
           <td></td>
         </tr>
-        <tr>
+        <tr id="others-mood">
           <td><strong>Others are</strong></td>
           <td></td>
           <td></td>
@@ -61,6 +61,16 @@
           connection.send(JSON.stringify({type:'moodtracker.change',moodName:myMood}));
         }
 
+        function updateMoodStats(stats) {
+          var tds = document.getElementById('others-mood').getElementsByTagName('td'),
+          i = tds.length-1,
+          mood;
+          for (;i>=1;i--) {
+            mood = moods[i-1];
+            tds[i].textContent = stats[mood];
+          }
+        }
+
         connection.onopen = function() {
           setStatus('Connected');
           connection.send(JSON.stringify({type:'moodtracker.change',moodName:myMood}));
@@ -72,8 +82,9 @@
           var data = JSON.parse(e.data);
 
           setStatus('Got message: '+e.data);
-          if (data.clientsCount) {
+          if (data.type == 'moodtracker.status') {
             setStatus(data.clientsCount,'clients');
+            updateMoodStats(data.moods);
           }
 
         };
