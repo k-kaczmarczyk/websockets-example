@@ -26,18 +26,28 @@ ws.on('error',function(error) {
 
 ws.on('connection',function(socket) {
   var i;
+  function broadcastClientsCount() {
+    data = {
+      clientsCount: ws.clientsCount
+    };
+
+    for (i=0;i<ws.clients.length;i++) {
+      if (ws.clients[i])
+        ws.clients[i].send(JSON.stringify(data));
+    }
+  }
+
 
   socket.on('error',function(e) {
     console.log('socker error ',e);
   });
+
+  socket.on('close',function() {
+    broadcastClientsCount();
+  });
+
   console.log('client connected, number of clients:',ws.clientsCount);
   //sending client count to newly connected client
-  data = {
-    clientsCount: ws.clientsCount
-  };
-
-  for (i=0;i<ws.clients.length;i++) {
-    ws.clients[i].send(JSON.stringify(data));
-  }
+  broadcastClientsCount();
 
 });
