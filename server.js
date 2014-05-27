@@ -31,7 +31,7 @@ ws.on('connection',function(socket) {
   console.log('client connected, number of clients:',ws.clientsCount);
   //sending client count to newly connected client
   data = {
-    clientCount: ws.clientsCount
+    clientsCount: ws.clientsCount
   };
   socket.send(JSON.stringify(data));
 });
