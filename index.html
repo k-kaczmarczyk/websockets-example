@@ -1,1 +1,8 @@
 <h1>Mood tracker</h1>
+
+<script type="text/javascript">
+  var connection = new WebSocket("ws://localhost");
+  connection.onopen = function() {
+    alert('connected');
+  };
+</script>
