@@ -1,29 +1,56 @@
 var http = require('http'),
+  url = require('url'),
+  path = require('path'),
   fs = require('fs'),
-  ws = require('websocket.io');
+  ws = require('websocket.io'),
+  io = require('socket.io')(8080);
 
 function handler(req, res) {
-  fs.readFile(__dirname + '/index.html',
-    function(err, data) {
+  var uri = url.parse(req.url).pathname,
+  filename = path.join(process.cwd(),uri);
+
+  if (fs.exists(filename,function(exists) {
+    if(!exists) {
+      res.writeHead(404, {"Content-Type": "text/plain"});
+      res.write("404 Not Found\n");
+      res.end();
+      return;
+    }
+
+    if (fs.statSync(filename).isDirectory()) filename += '/index.html';
+
+    console.log('handler',uri,filename);
+
+    fs.readFile(filename, "binary", function(err, data) {
       if (err) {
-        res.writeHead(500);
-        return res.end('Error loading index.html');
+        res.writeHead(500, {"Content-Type": "text/plain"});
+        res.write(err + "\n");
+        res.end();
+        return;
       }
 
       res.writeHead(200);
-      res.end(data);
+      res.write(data, "binary");
+      res.end();
     });
+
+  }));
 }
 
 var app = http.createServer(handler);
-
 app.listen(80);
+
+
+
 var ws = ws.attach(app);
 
 ws.on('error',function(error) {
   console.log('error');
 });
 
+io.sockets.on('connection',function(socket) {
+  console.log('Connected to socket.io');
+});
 //mood types:
 
 var moods = {
@@ -38,8 +65,6 @@ function broadcastStatus() {
     clientsCount: ws.clientsCount,
     moods: moods
   };
-
-  console.log('Broadcasting status:',data);
 
   for (i=0;i<ws.clients.length;i++) {
     if (ws.clients[i])
@@ -61,7 +86,6 @@ ws.on('connection',function(socket) {
   });
 
   socket.on('data',function(data) {
-    console.log('received "'+data+'"');
 
     //interpreting as json:
     json = JSON.parse(data);
@@ -75,7 +99,6 @@ ws.on('connection',function(socket) {
     }
   });
 
-  console.log('client connected, number of clients:',ws.clientsCount);
   //sending client count to newly connected client
   broadcastStatus();
 

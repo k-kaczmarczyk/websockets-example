@@ -33,61 +33,7 @@
           <td></td>
         </tr>
       </table>
-
-      <script type="text/javascript">
-        var moods = [
-          'sad',
-          'content',
-          'happy'
-        ],
-        myMood = 'content',
-        connection = new WebSocket("ws://localhost");
-
-        function setStatus(txt,el) {
-          el = el || 'status';
-          document.getElementById(el).textContent = txt;
-        };
-
-        function setMood(mood) {
-          var tds = document.getElementById('my-mood').getElementsByTagName('td'),
-          i = tds.length-1;
-          for (;i>=1;i--) {
-            if (i-1 == moods.indexOf(mood))
-              tds[i].textContent = 'x';
-            else
-              tds[i].textContent = '';
-          }
-          myMood = mood;
-          connection.send(JSON.stringify({type:'moodtracker.change',moodName:myMood}));
-        }
-
-        function updateMoodStats(stats) {
-          var tds = document.getElementById('others-mood').getElementsByTagName('td'),
-          i = tds.length-1,
-          mood;
-          for (;i>=1;i--) {
-            mood = moods[i-1];
-            tds[i].textContent = stats[mood];
-          }
-        }
-
-        connection.onopen = function() {
-          setStatus('Connected');
-          connection.send(JSON.stringify({type:'moodtracker.change',moodName:myMood}));
-        };
-        connection.onerror = function(error) {
-          setStatus('Error');
-        };
-        connection.onmessage = function(e) {
-          var data = JSON.parse(e.data);
-
-          setStatus('Got message: '+e.data);
-          if (data.type == 'moodtracker.status') {
-            setStatus(data.clientsCount,'clients');
-            updateMoodStats(data.moods);
-          }
-
-        };
-      </script>
+      <script src="https://cdn.socket.io/socket.io-1.0.4.js"></script>
+      <script src="script.js"></script>
     </body>
 </html>
